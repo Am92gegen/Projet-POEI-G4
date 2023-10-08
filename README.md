@@ -4,4 +4,4 @@ Nos différents fichiers de code.
 Hello à tous, 
 
 Ici vous trouverez tous nos fichiers partagés concernant le projet.
-Je me suis permis de mettre un premier fichier.html pour l'instant vide afin de faire un test.
+Je me suis permis de faire quelques modifications pour l'instant afin de faire des tests.
