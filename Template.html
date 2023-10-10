@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Incident Report</title>
+    <style>
+        @page {
+            margin: 20mm 10mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        h1, h2 {
+            color: #333366;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .summary {
+            background-color: #f8f8f8;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .nested-table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        .nested-table, .nested-table th, .nested-table td {
+            border: 1px solid #666;
+        }
+        .nested-table th, .nested-table td {
+            padding: 5px;
+            text-align: left;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vehicle Incident Report</h1>
+    <div class="summary">
+        <p><strong>Vehicle Description:</strong> [VEHICLE_DESCRIPTION]</p>
+        <p><strong>Total Incidents:</strong> [TOTAL_INCIDENTS]</p>
+    </div>
+    <h2>List of Incidents</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Additional Info</th> <!-- Updated header -->
+        </tr>
+        [INCIDENT_LIST] <!-- Placeholder for dynamic data -->
+    </table>
+    <h2>Incidents by Workstation</h2>
+    [INCIDENTS_BY_POSTE]
+</body>
+</html>
