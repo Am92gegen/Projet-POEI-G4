@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PDF Report</title>
+    <style>
+    
+        /* Réinitialisation des marges et du padding par défaut */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .logoInetum {
+            width: 15%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #2a2850;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #232c4a;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #232c4a;
+            border-radius: 3px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: #232c4a;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            align-items: center;
+            display: block;
+            margin: 0 auto;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #232c4a;
+        }
+    
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Inetum.png" alt="logoInetum" class="logoInetum">
+        <br>
+        <br>
+        <h1>Generer le rapport de PDF</h1>
+        <form id="form" onsubmit="getReport()" target="_blank">
+            <label for="id_vehicle">Identidiant du véhicule</label>
+            <input type="text" id="id_vehicle" pattern="\d+" placeholder="Enter the identifier" required />
+            <br>
+            <br>
+            <input type="submit" id="submit" value="Generate PDF">
+        </form>
+    </div>
+
+    <script>
+        function getReport() {
+            let id_vehicle = document.getElementById("id_vehicle").value;
+            let action_src = "http://localhost:5000/report/" + id_vehicle;
+            let form = document.getElementById('form');
+            form.action = action_src;
+        }
+    </script>
+
+</body>
+
+</html>

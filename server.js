@@ -45,7 +45,7 @@ app.get('/report/:vehicleId', async (req, res) => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.setContent(modifiedHtml);
-        const pdfBuffer = await page.pdf({ format: 'A4' });
+        const pdfBuffer = await page.pdf({format: 'A4', printBackground: true});
         await browser.close();
 
         // Emitting a message to the notification server
@@ -105,24 +105,34 @@ async function getTotalIncidents(vehicleId) {
             if (err) {
                 return reject(err);
             }
-            resolve(row ? row.count : 0);
+            let totalIncidents = row ? row.count : 0;
+            let bgColor = totalIncidents === 0 ? "green" : "red";
+            resolve(`<span style="background-color: ${bgColor};">${totalIncidents}</span>`);
         });
     });
 }
 
 async function getIncidentListHtml(vehicleId) {
     return new Promise((resolve, reject) => {
-        db.all(`SELECT incident_id, incident_desc, etat, ordre_desc FROM incident JOIN ordre ON incident.ordre = ordre.ordre_id WHERE ordre IN (SELECT ordre_id FROM ordre WHERE vehicule = ?)`, [vehicleId], (err, rows) => {
+        db.all(`SELECT incident_id, incident_desc, etat, ordre_id, ordre_desc FROM incident JOIN ordre ON incident.ordre = ordre.ordre_id WHERE ordre IN (SELECT ordre_id FROM ordre WHERE vehicule = ?)`, [vehicleId], (err, rows) => {
             if (err) {
                 return reject(err);
             }
             const incidentListHtml = rows.map(row => {
+                let bgColor = row.etat === "OPEN" ? "red" : "green";
                 return `
                     <tr>
                         <td>${row.incident_id}</td>
                         <td>${row.incident_desc}</td>
-                        <td>${row.etat}</td>
-                        <td>${row.incident_id}, ${row.ordre_desc}</td> <!-- Modified line -->
+                        <td style="background-color: ${bgColor}">${row.etat}</td>
+                        <td>
+                            <table class="nested-table">
+                            <tr>
+                                <td>${row.ordre_id}</td>
+                                <td>${row.ordre_desc}</td>
+                            </tr>
+                            </table>
+                        </td>
                     </tr>`;
             }).join('');
             resolve(incidentListHtml);
@@ -146,7 +156,8 @@ async function getIncidentsByPosteHtml(vehicleId) {
                     incidentsByPosteHtml += `<h3>${row.poste_desc}</h3><table><tr><th>Incident</th><th>Status</th><th>Order</th></tr>`;
                     currentPoste = row.poste_desc;
                 }
-                incidentsByPosteHtml += `<tr><td>${row.incident_desc}</td><td>${row.etat}</td><td>${row.ordre_desc}</td></tr>`;
+                let bgColor = row.etat === "OPEN" ? "red" : "green";
+                incidentsByPosteHtml += `<tr><td>${row.incident_desc}</td><td style="background-color: ${bgColor}">${row.etat}</td><td>${row.ordre_desc}</td></tr>`;
             });
             incidentsByPosteHtml += rows.length ? '</table>' : '<p>No incidents by workstation found.</p>';
             resolve(incidentsByPosteHtml);
