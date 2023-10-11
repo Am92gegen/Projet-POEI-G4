@@ -1,42 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Incident Report</title>
+    <title>Liste des incidents du véhicule</title>
     <link rel="stylesheet" href="Template.css">
 </head>
+
 <body>
     <div class="first-page">
         <!-- Contenu de la première page -->
-        <h1>Liste des incidents du véhicule</h1>
-        <p><strong>Vehicle Description:</strong> [VEHICLE_DESCRIPTION]</p>
+        <h1 id="title">Liste des incidents du véhicule</h1>
+        <p>Description du véhicule : <strong>[VEHICLE_DESCRIPTION]</strong></p>
     </div>
-    <div class="table-of-contents">
-        <h3>Table des matières</h3>
+    <div class="table-of-contents page">
+        <h2>Table des matières</h2>
         <ul>
-            <li><a href="#resume">I. Résumé</a></li>
-            <li><a href="#List of Incidents"> II. Liste des incidents et status des incidents</a></li>
-            <li><a href="#detailed-list">III. Liste détaillée des incidents</a></li>
-            <li><a href="#Incidents by Workstation">IV. Poste de travail</a></li>
+            <li><a href="#resume">Résumé</a></li>
+            <li><a href="#listOfIncidents">Liste des incidents et status des incidents</a></li>
+            <li><a href="#detailedList">Liste détaillée des incidents</a></li>
+            <!--<li><a href="#incidentsByWorkstation">IV. Poste de travail</a></li>-->
         </ul>
     </div>
-    <h1>Vehicle Incident Report</h1>
-    <div id="resume" class="summary">
-        <p><strong>Vehicle Description:</strong> [VEHICLE_DESCRIPTION]</p>
-        <p><strong>Total Incidents:</strong> [TOTAL_INCIDENTS]</p>
+    <div id="resume" class="page">
+        <h2>Résumé</h2>
+        <p>Ce rapport a pour but d'informer sur la liste des incidents des incidents déclarés sur le véhicule <strong>[VEHICLE_DESCRIPTION]</strong>.</p>
+        <p><strong>[TOTAL_INCIDENTS]</strong> incidents ont été trouvés sur le véhicule.</p>
     </div>
-    <h2 id="List of Incidents">List of Incidents</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Additional Info</th> <!-- Updated header -->
-        </tr>
-        [INCIDENT_LIST] <!-- Placeholder for dynamic data -->
-    </table>
-    <h2 id="Incidents by Workstation">Incidents by Workstation</h2>
-    [INCIDENTS_BY_POSTE]
+    <div id="listOfIncidents" class="page">
+        <h2 >Liste des incidents</h2>
+        <p>Le tableau ci-dessous montre la liste des incidents pour le véhicule <strong>[VEHICLE_DESCRIPTION]</strong>.</p>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Description de l'incident</th>
+                <th>Etat</th>
+                <th>Informations supplémentaires</th> <!-- Updated header -->
+            </tr>
+            [INCIDENT_LIST] <!-- Placeholder for dynamic data -->
+        </table>
+    </div>
+    <div id="detailedList" class="page">
+        <h2 >Liste détaillée des incidents</h2>
+        <p>Ce chapitre contient la liste des incidents déclarés par poste de travail.</p>
+        [INCIDENTS_BY_POSTE]
+    </div>
 </body>
 </html>

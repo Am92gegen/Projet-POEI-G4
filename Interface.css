@@ -1,0 +1,69 @@
+/* Réinitialisation des marges et du padding par défaut */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.logoInetum {
+    width: 15%;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    text-align: center;
+}
+
+h1, h2 {
+    color: #2a2850;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #232c4a;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #232c4a;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    background-color: #232c4a;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-items: center;
+    display: block;
+    margin: 0 auto;
+}
+
+input[type="submit"]:hover {
+    background-color: #232c4a;
+}

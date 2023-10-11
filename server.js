@@ -17,11 +17,22 @@ fs.readFile('template.html', 'utf8')
         process.exit(1);
     });
 
+let errorHtml;
+
+fs.readFile('Error.html', 'utf8')
+    .then(data => {
+        errorHtml = data;
+    })
+    .catch(err => {
+        console.error("Failed to load HTML error:", err.message);
+        process.exit(1);
+    });
+
 const fs2 = require('fs');
 const header = `
-            <header style="margin: auto;">
-                <img height="50px" src="data:image/png;base64,${fs2.readFileSync("Img/Inetum.png", {encoding: 'base64'})}"/>
-            </header>`;
+    <header style="margin: auto; padding-top: 10px;">
+        <img height="40px" src="data:image/png;base64,${fs2.readFileSync("Img/Inetum.png", {encoding: 'base64'})}"/>
+    </header>`;
 const footer = `
     <footer style="text-align: center; margin: auto; width: 40%">
         <span style="font-size: 15px">
@@ -42,13 +53,14 @@ const notificationServer = ioClient('http://localhost:6000'); // Added line to c
 app.get('/report/:vehicleId', async (req, res) => {
     try {
         const vehicleId = req.params.vehicleId;
-
         const vehicleDescription = await getVehicleDescription(vehicleId);
         const totalIncidents = await getTotalIncidents(vehicleId);
         const incidentListHtml = await getIncidentListHtml(vehicleId);
         const incidentsByPosteHtml = await getIncidentsByPosteHtml(vehicleId);
 
         const modifiedHtml = templateHtml
+            .replace('[VEHICLE_DESCRIPTION]', vehicleDescription)
+            .replace('[VEHICLE_DESCRIPTION]', vehicleDescription)
             .replace('[VEHICLE_DESCRIPTION]', vehicleDescription)
             .replace('[TOTAL_INCIDENTS]', totalIncidents)
             .replace('[INCIDENT_LIST]', incidentListHtml)
@@ -67,8 +79,7 @@ app.get('/report/:vehicleId', async (req, res) => {
         });
         await browser.close();
 
-        // Emitting a message to the notification server
-        notificationServer.emit('pdfGenerated', { // Added line to emit message
+        notificationServer.emit('pdfGenerated', { 
             status: 'PDF Generated Successfully',
             vehicleId: vehicleId
         });
@@ -77,8 +88,18 @@ app.get('/report/:vehicleId', async (req, res) => {
         res.send(pdfBuffer);
 
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send("Internal Server Error");
+        if (err.message === 'Vehicle not found') {
+            const vehicleId = req.params.vehicleId;
+            const totalVehicles = await getTotalVehicles();
+            const modifiedErrorHtml = errorHtml
+                .replace('[VEHICLE_ID]', vehicleId)
+                .replace('[TOTAL_VEHICLE]', totalVehicles);
+            //res.sendFile(__dirname + '/Error.html');
+            res.status(404).send(modifiedErrorHtml);
+            //res.status(404).send(`Le véhicule demandé avec l'ID ${vehicleId} n'existe pas. Le nombre total de véhicules est ${totalVehicles}.`);
+        } else {
+            res.status(500).send("Erreur interne du serveur");
+        }
     }
 });
 
@@ -172,7 +193,7 @@ async function getIncidentsByPosteHtml(vehicleId) {
             rows.forEach(row => {
                 if (row.poste_desc !== currentPoste) {
                     incidentsByPosteHtml += currentPoste ? '</table>' : '';
-                    incidentsByPosteHtml += `<h3>${row.poste_desc}</h3><table><tr><th>Incident</th><th>Status</th><th>Order</th></tr>`;
+                    incidentsByPosteHtml += `<h3>${row.poste_desc}</h3><table><tr><th>Description de l'incident</th><th>Status</th><th>Order</th></tr>`;
                     currentPoste = row.poste_desc;
                 }
                 let bgColor = row.etat === "OPEN" ? "red" : "green";
@@ -180,6 +201,31 @@ async function getIncidentsByPosteHtml(vehicleId) {
             });
             incidentsByPosteHtml += rows.length ? '</table>' : '<p>No incidents by workstation found.</p>';
             resolve(incidentsByPosteHtml);
+        });
+    });
+}
+
+async function getVehicleDescription(vehicleId) {
+    return new Promise((resolve, reject) => {
+        db.get(`SELECT vehicule_desc FROM vehicule WHERE vehicule_id = ?`, [vehicleId], (err, row) => {
+            if (err) {
+                return reject(err);
+            }
+            if (!row) {
+                return reject(new Error('Vehicle not found'));
+            }
+            resolve(row.vehicule_desc);
+        });
+    });
+}
+
+async function getTotalVehicles() {
+    return new Promise((resolve, reject) => {
+        db.get(`SELECT COUNT(*) as count FROM vehicule`, [], (err, row) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(row ? row.count : 0);
         });
     });
 }
