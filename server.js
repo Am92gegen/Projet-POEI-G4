@@ -17,6 +17,18 @@ fs.readFile('template.html', 'utf8')
         process.exit(1);
     });
 
+const fs2 = require('fs');
+const header = `
+            <header style="margin: auto;">
+                <img height="50px" src="data:image/png;base64,${fs2.readFileSync("Img/Inetum.png", {encoding: 'base64'})}"/>
+            </header>`;
+const footer = `
+    <footer style="text-align: center; margin: auto; width: 40%">
+        <span style="font-size: 15px">
+            <span class="pageNumber"></span> of <span class="totalPages"></span>
+        </span>
+    </footer>`;
+
 let db = new sqlite3.Database('./Database.sqlite', (err) => {
     if (err) {
         console.error(err.message);
@@ -45,7 +57,14 @@ app.get('/report/:vehicleId', async (req, res) => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.setContent(modifiedHtml);
-        const pdfBuffer = await page.pdf({format: 'A4', printBackground: true});
+        await page.addStyleTag({path: 'Template.css'});
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            headerTemplate: header,
+            footerTemplate: footer,
+            displayHeaderFooter: true
+        });
         await browser.close();
 
         // Emitting a message to the notification server
@@ -107,7 +126,7 @@ async function getTotalIncidents(vehicleId) {
             }
             let totalIncidents = row ? row.count : 0;
             let bgColor = totalIncidents === 0 ? "green" : "red";
-            resolve(`<span style="background-color: ${bgColor};">${totalIncidents}</span>`);
+            resolve(`<span style="background-color: ${bgColor}; border: 1px solid black;">&nbsp;&nbsp;${totalIncidents}&nbsp;&nbsp;</span>`);
         });
     });
 }

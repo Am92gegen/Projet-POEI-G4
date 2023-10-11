@@ -4,59 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vehicle Incident Report</title>
-    <style>
-        @page {
-            margin: 20mm 10mm;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            border: 2px solid #ddd;
-        }
-        h1, h2 {
-            color: #333366;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 15px;
-            text-align: left;
-            vertical-align: top;
-        }
-        .summary {
-            background-color: #f8f8f8;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-        .nested-table {
-            width: 100%;
-            margin-top: 10px;
-            border-collapse: collapse;
-        }
-        .nested-table, .nested-table th, .nested-table td {
-            border: 1px solid #666;
-        }
-        .nested-table th, .nested-table td {
-            padding: 5px;
-            text-align: left;
-            vertical-align: top;
-        }
-    </style>
+    <link rel="stylesheet" href="Template.css">
 </head>
 <body>
+    <div class="first-page">
+        <!-- Contenu de la première page -->
+        <h1>Liste des incidents du véhicule</h1>
+        <p><strong>Vehicle Description:</strong> [VEHICLE_DESCRIPTION]</p>
+    </div>
+    <div class="table-of-contents">
+        <h3>Table des matières</h3>
+        <ul>
+            <li><a href="#resume">I. Résumé</a></li>
+            <li><a href="#List of Incidents"> II. Liste des incidents et status des incidents</a></li>
+            <li><a href="#detailed-list">III. Liste détaillée des incidents</a></li>
+            <li><a href="#Incidents by Workstation">IV. Poste de travail</a></li>
+        </ul>
+    </div>
     <h1>Vehicle Incident Report</h1>
-    <div class="summary">
+    <div id="resume" class="summary">
         <p><strong>Vehicle Description:</strong> [VEHICLE_DESCRIPTION]</p>
         <p><strong>Total Incidents:</strong> [TOTAL_INCIDENTS]</p>
     </div>
-    <h2>List of Incidents</h2>
+    <h2 id="List of Incidents">List of Incidents</h2>
     <table>
         <tr>
             <th>ID</th>
@@ -66,7 +36,7 @@
         </tr>
         [INCIDENT_LIST] <!-- Placeholder for dynamic data -->
     </table>
-    <h2>Incidents by Workstation</h2>
+    <h2 id="Incidents by Workstation">Incidents by Workstation</h2>
     [INCIDENTS_BY_POSTE]
 </body>
 </html>
