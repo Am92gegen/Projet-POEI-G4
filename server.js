@@ -35,8 +35,8 @@ const header = `
     </header>`;
 const footer = `
     <footer style="text-align: center; margin: auto; width: 40%">
-        <span style="font-size: 15px">
-            <span class="pageNumber"></span> of <span class="totalPages"></span>
+        <span style="font-size: 15px;">
+            <span class="pageNumber"></span> sur <span class="totalPages"></span>
         </span>
     </footer>`;
 
@@ -64,7 +64,8 @@ app.get('/report/:vehicleId', async (req, res) => {
             .replace('[VEHICLE_DESCRIPTION]', vehicleDescription)
             .replace('[TOTAL_INCIDENTS]', totalIncidents)
             .replace('[INCIDENT_LIST]', incidentListHtml)
-            .replace('[INCIDENTS_BY_POSTE]', incidentsByPosteHtml);
+            .replace('[INCIDENTS_BY_POSTE]', incidentsByPosteHtml[0])
+            .replace("[SUMMARY_WORKSTATION]", incidentsByPosteHtml[1]);
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -94,9 +95,7 @@ app.get('/report/:vehicleId', async (req, res) => {
             const modifiedErrorHtml = errorHtml
                 .replace('[VEHICLE_ID]', vehicleId)
                 .replace('[TOTAL_VEHICLE]', totalVehicles);
-            //res.sendFile(__dirname + '/Error.html');
             res.status(404).send(modifiedErrorHtml);
-            //res.status(404).send(`Le véhicule demandé avec l'ID ${vehicleId} n'existe pas. Le nombre total de véhicules est ${totalVehicles}.`);
         } else {
             res.status(500).send("Erreur interne du serveur");
         }
@@ -106,8 +105,6 @@ app.get('/report/:vehicleId', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-// ... Your database functions remain unchanged ...
-
 
 async function sendNotification(message) {
     try {
@@ -146,7 +143,7 @@ async function getTotalIncidents(vehicleId) {
                 return reject(err);
             }
             let totalIncidents = row ? row.count : 0;
-            let bgColor = totalIncidents === 0 ? "green" : "red";
+            let bgColor = totalIncidents === 0 ? "#4EB300" : "red";
             resolve(`<span style="background-color: ${bgColor}; border: 1px solid black;">&nbsp;&nbsp;${totalIncidents}&nbsp;&nbsp;</span>`);
         });
     });
@@ -158,8 +155,8 @@ async function getIncidentListHtml(vehicleId) {
             if (err) {
                 return reject(err);
             }
-            const incidentListHtml = rows.map(row => {
-                let bgColor = row.etat === "OPEN" ? "red" : "green";
+            let incidentListHtml = rows.map(row => {
+                let bgColor = row.etat === "OPEN" ? "red" : "#4EB300";
                 return `
                     <tr>
                         <td>${row.incident_id}</td>
@@ -168,39 +165,49 @@ async function getIncidentListHtml(vehicleId) {
                         <td>
                             <table class="nested-table">
                             <tr>
-                                <td>${row.ordre_id}</td>
+                                <td nowrap>Odre.ID : ${row.ordre_id}</td>
                                 <td>${row.ordre_desc}</td>
                             </tr>
                             </table>
                         </td>
                     </tr>`;
             }).join('');
+            incidentListHtml = rows.length ? `<table>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Description de l'incident</th>
+                                                    <th>Etat</th>
+                                                    <th>Ordre de travail</th> <!-- Updated header -->
+                                                </tr>
+                                                ${incidentListHtml}
+                                            </table>` : "<p>Aucun incident n'a été détecté.</p>";
             resolve(incidentListHtml);
         });
     });
 }
 
-
 async function getIncidentsByPosteHtml(vehicleId) {
     return new Promise((resolve, reject) => {
-        db.all(`SELECT poste.poste_desc, incident.incident_desc, incident.etat, ordre.ordre_desc FROM incident JOIN ordre ON incident.ordre = ordre.ordre_id JOIN poste ON ordre.poste = poste.poste_id WHERE ordre.vehicule = ?`, [vehicleId], (err, rows) => {
+        db.all(`SELECT poste.poste_id, poste.poste_desc, incident.incident_desc, incident.etat, ordre.ordre_desc FROM incident JOIN ordre ON incident.ordre = ordre.ordre_id JOIN poste ON ordre.poste = poste.poste_id WHERE ordre.vehicule = ? ORDER BY poste.poste_id`, [vehicleId], (err, rows) => {
             if (err) {
                 return reject(err);
             }
 
             let incidentsByPosteHtml = '';
             let currentPoste = '';
+            let summaryWorkstation = '';
             rows.forEach(row => {
                 if (row.poste_desc !== currentPoste) {
                     incidentsByPosteHtml += currentPoste ? '</table>' : '';
-                    incidentsByPosteHtml += `<h3>${row.poste_desc}</h3><table><tr><th>Description de l'incident</th><th>Status</th><th>Order</th></tr>`;
+                    incidentsByPosteHtml += `<h3 id="workstation${row.poste_id}">${row.poste_desc}</h3><table><tr><th>Description de l'incident</th><th>Etat</th><th>Ordre de travail</th></tr>`;
                     currentPoste = row.poste_desc;
+                    summaryWorkstation += `<li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#workstation${row.poste_id}">${row.poste_desc}</a></li>`;
                 }
-                let bgColor = row.etat === "OPEN" ? "red" : "green";
+                let bgColor = row.etat === "OPEN" ? "red" : "#4EB300";
                 incidentsByPosteHtml += `<tr><td>${row.incident_desc}</td><td style="background-color: ${bgColor}">${row.etat}</td><td>${row.ordre_desc}</td></tr>`;
             });
-            incidentsByPosteHtml += rows.length ? '</table>' : '<p>No incidents by workstation found.</p>';
-            resolve(incidentsByPosteHtml);
+            incidentsByPosteHtml += rows.length ? '</table>' : "<p>Aucun incident n'a été détecté.</p>";
+            resolve([incidentsByPosteHtml, summaryWorkstation]);
         });
     });
 }
