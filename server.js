@@ -162,14 +162,9 @@ async function getIncidentListHtml(vehicleId) {
                         <td>${row.incident_id}</td>
                         <td>${row.incident_desc}</td>
                         <td style="background-color: ${bgColor}">${row.etat}</td>
-                        <td>
-                            <table class="nested-table">
-                            <tr>
-                                <td nowrap>Odre.ID : ${row.ordre_id}</td>
-                                <td>${row.ordre_desc}</td>
-                            </tr>
-                            </table>
-                        </td>
+                        <td style="text-align: center">${row.ordre_id}</td>
+                        <td>${row.ordre_desc}</td>
+
                     </tr>`;
             }).join('');
             incidentListHtml = rows.length ? `<table>
@@ -177,7 +172,8 @@ async function getIncidentListHtml(vehicleId) {
                                                     <th>ID</th>
                                                     <th>Description de l'incident</th>
                                                     <th>Etat</th>
-                                                    <th>Ordre de travail</th> <!-- Updated header -->
+                                                    <th nowrap style="text-align: center">Ordre ID</th> <!-- Updated header -->
+                                                    <th>Ordre de travail</th>
                                                 </tr>
                                                 ${incidentListHtml}
                                             </table>` : "<p>Aucun incident n'a été détecté.</p>";
