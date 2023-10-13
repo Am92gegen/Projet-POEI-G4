@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des incidents du véhicule</title>
+    <link rel="stylesheet" href="Template.css">
+</head>
+
+<body>
+    <div class="first-page">
+        <!-- Contenu de la première page -->
+        <h1 id="title">Liste des incidents du véhicule</h1>
+        <p>
+            ID du véhicule : 
+            <strong><span class="sql">SELECT vehicule_id FROM vehicule WHERE vehicule_id = ?</span></strong>
+            <br><br>
+            Description du véhicule : 
+            <strong><span class="sql">SELECT vehicule_desc FROM vehicule WHERE vehicule_id = ?</span></strong>
+        </p>
+    </div>
+</body>
+</html>
